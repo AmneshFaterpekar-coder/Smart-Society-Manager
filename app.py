@@ -45,7 +45,11 @@ def push_notification(society, text):
 
 @app.route('/')
 def home():
-    return "SmartSociety Backend Running ✅"
+    return send_from_directory('static', 'login.html')
+
+@app.route('/<path:filename>')
+def serve_file(filename):
+    return send_from_directory('static', filename)
 
 # ---------------- VISITORS ---------------- #
 
