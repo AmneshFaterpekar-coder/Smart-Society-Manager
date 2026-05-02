@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SmartSociety Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            font-family: 'DM Sans', sans-serif;
+            background: #0a0f1e;
+            overflow: hidden;
+        }
+
+        /* Animated background */
+        .bg {
+            position: fixed; inset: 0; z-index: 0;
+            background: radial-gradient(ellipse at 20% 50%, #1a2744 0%, transparent 60%),
+                        radial-gradient(ellipse at 80% 20%, #0d2137 0%, transparent 50%),
+                        radial-gradient(ellipse at 60% 80%, #111827 0%, transparent 50%);
+        }
+        .bg::after {
+            content: '';
+            position: absolute; inset: 0;
+            background-image: radial-gradient(circle, rgba(99,102,241,0.08) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: gridMove 20s linear infinite;
+        }
+        @keyframes gridMove { to { background-position: 40px 40px; } }
+
+        .split {
+            display: flex;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Left panel */
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px;
+            animation: slideIn 0.8s ease;
+        }
+        @keyframes slideIn { from { opacity:0; transform: translateX(-30px); } to { opacity:1; transform:translateX(0); } }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 60px;
+        }
+        .brand-icon {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, #6366f1, #3b82f6);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px;
+        }
+        .brand-name {
+            font-family: 'Playfair Display', serif;
+            color: white;
+            font-size: 22px;
+            letter-spacing: -0.5px;
+        }
+
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif;
+            color: white;
+            font-size: 52px;
+            line-height: 1.15;
+            margin-bottom: 20px;
+        }
+        .hero-text h1 span { color: #6366f1; }
+
+        .hero-text p {
+            color: #94a3b8;
+            font-size: 16px;
+            line-height: 1.7;
+            max-width: 400px;
+        }
+
+        .features {
+            margin-top: 50px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+        .feature-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #6366f1;
+            flex-shrink: 0;
+        }
+
+        /* Right panel - login form */
+        .right-panel {
+            width: 480px;
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 50px;
+            animation: fadeUp 0.9s ease;
+        }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+        .form-card { width: 100%; }
+
+        .form-card h2 {
+            font-family: 'Playfair Display', serif;
+            color: white;
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        .form-card .subtitle {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 36px;
+        }
+
+        .field { margin-bottom: 20px; }
+        .field label {
+            display: block;
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
+        }
+        .field input, .field select {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s;
+            outline: none;
+        }
+        .field input::placeholder { color: #475569; }
+        .field input:focus, .field select:focus {
+            border-color: #6366f1;
+            background: rgba(99,102,241,0.08);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+        }
+        .field select option { background: #1e293b; color: white; }
+
+        .role-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .role-btn {
+            padding: 12px 8px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: #94a3b8;
+            font-size: 13px;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .role-btn:hover { border-color: #6366f1; color: white; }
+        .role-btn.active {
+            background: rgba(99,102,241,0.2);
+            border-color: #6366f1;
+            color: white;
+        }
+        .role-icon { display: block; font-size: 20px; margin-bottom: 4px; }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #6366f1, #3b82f6);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99,102,241,0.4);
+        }
+        .login-btn:active { transform: translateY(0); }
+
+        .hint {
+            margin-top: 20px;
+            background: rgba(99,102,241,0.1);
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+        .hint strong { color: #a5b4fc; }
+
+        .error-msg {
+            color: #f87171;
+            font-size: 13px;
+            margin-top: 12px;
+            display: none;
+            padding: 10px 14px;
+            background: rgba(239,68,68,0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(239,68,68,0.2);
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg"></div>
+
+<div class="split">
+    <!-- Left -->
+    <div class="left-panel">
+        <div class="brand">
+            <div class="brand-icon">🏢</div>
+            <span class="brand-name">SmartSociety</span>
+        </div>
+        <div class="hero-text">
+            <h1>Manage your<br>society <span>smarter.</span></h1>
+            <p>A unified platform for residents, admins, and security to coordinate seamlessly — visitors, maintenance, amenities, and more.</p>
+        </div>
+        <div class="features">
+            <div class="feature"><div class="feature-dot"></div>Real-time visitor approvals & gate management</div>
+            <div class="feature"><div class="feature-dot"></div>Maintenance billing & instant payments</div>
+            <div class="feature"><div class="feature-dot"></div>Amenity booking with live availability</div>
+            <div class="feature"><div class="feature-dot"></div>Society-wide announcements & complaints</div>
+        </div>
+    </div>
+
+    <!-- Right -->
+    <div class="right-panel">
+        <div class="form-card">
+            <h2>Welcome back</h2>
+            <p class="subtitle">Sign in to your society dashboard</p>
+
+            <div class="field">
+                <label>Society Name</label>
+                <input type="text" id="societyName" placeholder="e.g. Greenwood Heights">
+            </div>
+
+            <div class="field">
+                <label>Email Address</label>
+                <input type="email" id="username" placeholder="you@example.com">
+            </div>
+
+            <div class="field">
+                <label>Sign in as</label>
+                <div class="role-grid">
+                    <button class="role-btn active" onclick="selectRole('resident', this)">
+                        <span class="role-icon">🏠</span>Resident
+                    </button>
+                    <button class="role-btn" onclick="selectRole('admin', this)">
+                        <span class="role-icon">⚙️</span>Admin
+                    </button>
+                    <button class="role-btn" onclick="selectRole('security', this)">
+                        <span class="role-icon">🛡️</span>Security
+                    </button>
+                </div>
+            </div>
+
+            <div class="error-msg" id="errorMsg"></div>
+
+            <button class="login-btn" onclick="login()">Sign In →</button>
+
+            <div class="hint">
+                <strong>Demo credentials:</strong><br>
+                Resident: resident1@example.com &nbsp;|&nbsp; Admin: admin@example.com<br>
+                Security: security@example.com
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let selectedRole = 'resident';
+
+function selectRole(role, el) {
+    selectedRole = role;
+    document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+}
+
+function login() {
+    const society = document.getElementById("societyName").value.trim();
+    const username = document.getElementById("username").value.trim();
+    const errEl = document.getElementById("errorMsg");
+
+    errEl.style.display = 'none';
+
+    if (!society || !username) {
+        showError("Please enter both Society Name and Email.");
+        return;
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(username)) {
+        showError("Please enter a valid email address.");
+        return;
+    }
+
+    const validUsers = {
+        resident: ["resident1@example.com", "resident2@example.com"],
+        admin: ["admin@example.com"],
+        security: ["security@example.com"]
+    };
+
+    if (!validUsers[selectedRole].includes(username)) {
+        showError(`Invalid email for role: ${selectedRole}. Check the demo credentials below.`);
+        return;
+    }
+
+    const base = `?society=${encodeURIComponent(society)}&user=${encodeURIComponent(username)}`;
+    const pages = { resident: 'resident.html', admin: 'admin.html', security: 'security.html' };
+    window.location.href = pages[selectedRole] + base;
+}
+
+function showError(msg) {
+    const el = document.getElementById("errorMsg");
+    el.textContent = msg;
+    el.style.display = 'block';
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+</script>
+</body>
+</html>
