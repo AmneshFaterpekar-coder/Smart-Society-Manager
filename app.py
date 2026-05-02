@@ -1,12 +1,20 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
 from datetime import datetime
+import os
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'smartsociety_secret'
-CORS(app, resources={r"/*": {"origins": "*"}})
-socketio = SocketIO(app, cors_allowed_origins="*")
+app = Flask(__name__, static_folder='static', static_url_path='')
+
+# Serve login page at root
+@app.route('/')
+def home():
+    return send_from_directory('static', 'login.html')
+
+# Serve all other static files (html, css, js)
+@app.route('/<path:filename>')
+def serve_file(filename):
+    return send_from_directory('static', filename)
 
 # ---------------- IN-MEMORY DATA ---------------- #
 
@@ -367,8 +375,6 @@ def on_join(data):
 
 # ---------------- RUN ---------------- #
 
-import os
-
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    socketio.run(app, host="0.0.0.0", port=port, debug=False)
+    port = int(os.environ.get('PORT', 5000))
+    socketio.run(app, host='0.0.0.0', port=port, debug=False)
