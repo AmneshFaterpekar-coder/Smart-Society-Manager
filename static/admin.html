@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard – SmartSociety</title>
+    <link rel="stylesheet" href="main.css">
+    <style>
+        .admin-action-bar { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+        .complaint-item { border-left: 3px solid var(--danger); }
+        .complaint-item.resolved { border-left-color: var(--success); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <div class="icon">🏢</div>
+            <span>SmartSociety</span>
+        </div>
+
+        <div class="sidebar-section-label">Menu</div>
+        <ul>
+            <li class="active" onclick="showSection('dashboard', this)">
+                <span class="nav-icon">📊</span> Dashboard
+            </li>
+            <li onclick="showSection('visitors', this)">
+                <span class="nav-icon">🚶</span> Visitors
+            </li>
+            <li onclick="showSection('maintenance', this)">
+                <span class="nav-icon">💳</span> Maintenance
+            </li>
+            <li onclick="showSection('amenities', this)">
+                <span class="nav-icon">🏊</span> Amenities
+            </li>
+            <li onclick="showSection('staff', this)">
+                <span class="nav-icon">👷</span> Staff
+            </li>
+            <li onclick="showSection('complaints', this)">
+                <span class="nav-icon">📋</span> Complaints
+            </li>
+            <li onclick="showSection('announcements', this)">
+                <span class="nav-icon">📢</span> Announcements
+            </li>
+            <li onclick="showSection('ai', this)">
+                <span class="nav-icon">🤖</span> AI Insights
+            </li>
+        </ul>
+
+        <div class="sidebar-bottom">
+            <div class="logout-btn" onclick="logout()">🚪 Logout</div>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="main">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1 id="welcomeText">Admin Dashboard</h1>
+                <div class="meta" id="societyText"></div>
+            </div>
+            <button class="notif-btn" onclick="showSection('notifications_panel', this)" title="Notifications">
+                🔔 <span class="notif-dot" id="notifDot"></span>
+            </button>
+        </div>
+
+        <!-- ===== DASHBOARD SECTION ===== -->
+        <div id="sec-dashboard" class="active-section">
+
+            <!-- Stats Cards -->
+            <div class="cards" id="statsCards">
+                <div class="card">
+                    <div class="card-glow blue"></div>
+                    <span class="card-icon">🏠</span>
+                    <div class="card-value" id="stat-residents">–</div>
+                    <div class="card-label">Total Residents</div>
+                </div>
+                <div class="card">
+                    <div class="card-glow yellow"></div>
+                    <span class="card-icon">💳</span>
+                    <div class="card-value" id="stat-payments">–</div>
+                    <div class="card-label">Pending Payments</div>
+                </div>
+                <div class="card">
+                    <div class="card-glow green"></div>
+                    <span class="card-icon">🚶</span>
+                    <div class="card-value" id="stat-visitors">–</div>
+                    <div class="card-label">Visitors Today</div>
+                </div>
+                <div class="card">
+                    <div class="card-glow blue"></div>
+                    <span class="card-icon">👷</span>
+                    <div class="card-value" id="stat-staff">–</div>
+                    <div class="card-label">Staff Members</div>
+                </div>
+                <div class="card">
+                    <div class="card-glow red"></div>
+                    <span class="card-icon">📋</span>
+                    <div class="card-value" id="stat-complaints">–</div>
+                    <div class="card-label">Open Complaints</div>
+                </div>
+            </div>
+
+            <!-- Quick Grid -->
+            <div class="grid">
+
+                <!-- Recent Visitors -->
+                <div class="box">
+                    <div class="box-header">
+                        <h3>🚶 Recent Visitors</h3>
+                        <span class="live-dot"></span>
+                    </div>
+                    <table id="visitorTable">
+                        <tr><th>Name</th><th>Flat</th><th>Status</th><th>Time</th></tr>
+                    </table>
+                </div>
+
+                <!-- Notifications Feed -->
+                <div class="box">
+                    <div class="box-header"><h3>🔔 Activity Feed</h3></div>
+                    <ul id="notificationList" style="padding:0;list-style:none;"></ul>
+                </div>
+
+                <!-- Announcements -->
+                <div class="box">
+                    <div class="box-header"><h3>📢 Announcements</h3></div>
+                    <label>New Announcement</label>
+                    <input type="text" id="annInput" placeholder="Type announcement...">
+                    <div class="admin-action-bar">
+                        <button onclick="addAnnouncement()">Post Announcement</button>
+                    </div>
+                    <ul id="announcementList" style="padding:0;list-style:none;margin-top:12px;"></ul>
+                </div>
+
+                <!-- Recent Complaints -->
+                <div class="box">
+                    <div class="box-header"><h3>📋 Recent Complaints</h3></div>
+                    <div id="complaintListDash"></div>
+                </div>
+
+                <!-- AI Peak Usage -->
+                <div class="box">
+                    <div class="box-header">
+                        <h3>🤖 AI — Peak Usage</h3>
+                        <span class="badge badge-blue">Predictive</span>
+                    </div>
+                    <div id="aiPeakWidget">
+                        <div class="empty-state"><span class="empty-icon">📊</span>Loading predictions...</div>
+                    </div>
+                </div>
+
+                <!-- AI Anomalies -->
+                <div class="box">
+                    <div class="box-header">
+                        <h3>🚨 AI — Security Alerts</h3>
+                        <span class="badge badge-red" id="anomalyBadge">0</span>
+                    </div>
+                    <div id="aiAnomalyWidget">
+                        <div class="empty-state"><span class="empty-icon">🔍</span>Scanning...</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ===== VISITORS SECTION ===== -->
+        <div id="sec-visitors" style="display:none;">
+            <div class="box">
+                <div class="box-header"><h3>🚶 All Visitors</h3></div>
+                <table id="allVisitorTable">
+                    <tr><th>Name</th><th>Flat</th><th>Status</th><th>Time</th></tr>
+                </table>
+            </div>
+
+            <!-- Visitor Queue -->
+            <div class="box" style="margin-top:16px;">
+                <div class="box-header">
+                    <h3>⏳ Visitor Queue</h3>
+                    <span class="badge badge-blue" id="queueCount">0 waiting</span>
+                </div>
+                <div id="visitorQueue"></div>
+            </div>
+        </div>
+
+        <!-- ===== MAINTENANCE SECTION ===== -->
+        <div id="sec-maintenance" style="display:none;">
+            <div class="grid">
+                <div class="box">
+                    <div class="box-header"><h3>➕ Add Maintenance Bill</h3></div>
+                    <label>Flat Number</label>
+                    <input type="text" id="flatInput" placeholder="e.g. A101">
+                    <label>Resident Name</label>
+                    <input type="text" id="residentName" placeholder="e.g. Rajesh Kumar">
+                    <label>Amount (₹)</label>
+                    <input type="number" id="amountInput" placeholder="2000">
+                    <div class="admin-action-bar">
+                        <button onclick="addMaintenance()">Add Bill</button>
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="box-header"><h3>💳 All Maintenance Bills</h3></div>
+                    <table id="maintenanceTable">
+                        <tr><th>Flat</th><th>Amount</th><th>Status</th></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== AMENITIES SECTION ===== -->
+        <div id="sec-amenities" style="display:none;">
+            <div class="box">
+                <div class="box-header"><h3>🏊 Amenity Bookings</h3></div>
+                <table id="amenityTable">
+                    <tr><th>Amenity</th><th>Date</th><th>Time</th><th>Booked By</th></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== STAFF SECTION ===== -->
+        <div id="sec-staff" style="display:none;">
+            <div class="grid">
+                <div class="box">
+                    <div class="box-header"><h3>➕ Add Staff Member</h3></div>
+                    <label>Full Name</label>
+                    <input type="text" id="staffName" placeholder="e.g. Ramesh Kumar">
+                    <label>Role</label>
+                    <select id="staffRole">
+                        <option value="Security">Security Guard</option>
+                        <option value="Maid">Maid / Housekeeping</option>
+                        <option value="Gardener">Gardener</option>
+                        <option value="Driver">Driver</option>
+                        <option value="Electrician">Electrician</option>
+                        <option value="Plumber">Plumber</option>
+                    </select>
+                    <label>Contact Number</label>
+                    <input type="text" id="staffContact" placeholder="e.g. 9876543210">
+                    <div class="admin-action-bar">
+                        <button onclick="addStaff()">Add Staff</button>
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="box-header"><h3>👷 Staff List</h3></div>
+                    <table id="staffTable">
+                        <tr><th>Name</th><th>Role</th><th>Contact</th><th>Added</th></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== COMPLAINTS SECTION ===== -->
+        <div id="sec-complaints" style="display:none;">
+            <div class="box">
+                <div class="box-header"><h3>📋 All Complaints</h3></div>
+                <table id="complaintTable">
+                    <tr><th>Flat</th><th>Subject</th><th>Description</th><th>Time</th><th>Status</th><th>Action</th></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== ANNOUNCEMENTS SECTION ===== -->
+        <div id="sec-announcements" style="display:none;">
+            <div class="box">
+                <div class="box-header"><h3>📢 All Announcements</h3></div>
+                <label>New Announcement</label>
+                <input type="text" id="annInput2" placeholder="Type announcement...">
+                <div class="admin-action-bar">
+                    <button onclick="addAnnouncement2()">Post</button>
+                </div>
+                <ul id="announcementList2" style="padding:0;list-style:none;margin-top:16px;"></ul>
+            </div>
+        </div>
+
+        <!-- ===== AI INSIGHTS SECTION ===== -->
+        <div id="sec-ai" style="display:none;">
+            <div class="grid">
+
+                <!-- Peak Usage Card -->
+                <div class="box">
+                    <div class="box-header">
+                        <h3>📊 Amenity Peak Prediction</h3>
+                        <button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="loadAIInsights()">↻ Refresh</button>
+                    </div>
+                    <div id="aiPeakFull">
+                        <div class="empty-state"><span class="empty-icon">📊</span>Loading...</div>
+                    </div>
+                </div>
+
+                <!-- Anomalies Full -->
+                <div class="box">
+                    <div class="box-header">
+                        <h3>🚨 Security Anomaly Detection</h3>
+                        <button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="loadAIInsights()">↻ Scan</button>
+                    </div>
+                    <div id="aiAnomalyFull">
+                        <div class="empty-state"><span class="empty-icon">🔍</span>Scanning...</div>
+                    </div>
+                </div>
+
+                <!-- Usage Breakdown -->
+                <div class="box">
+                    <div class="box-header"><h3>🏆 Amenity Usage Breakdown</h3></div>
+                    <div id="aiUsageBreakdown">
+                        <div class="empty-state"><span class="empty-icon">📈</span>No data yet</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="admin.js"></script>
+</body>
+</html>
