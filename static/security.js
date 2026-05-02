@@ -2,7 +2,8 @@
 const params = new URLSearchParams(window.location.search);
 const society = params.get("society") || "Society";
 const user    = params.get("user") || "Security";
-const BASE    = "http://127.0.0.1:5000";
+const BASE = window.location.origin;
+
 
 // ===== INIT =====
 window.addEventListener("DOMContentLoaded", function () {
